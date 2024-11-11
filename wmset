@@ -1,0 +1,117 @@
+#!/bin/bash
+chk() {
+if [ "$system" == "$(uname -o)" ]; then
+echo -ne ""
+else
+echo "Software corrompido! Carregando verificação de software..."
+wmchk
+fi
+}
+logo() {
+clear
+chk
+echo "WM PocketOS Settings"
+date
+}
+main() {
+logo
+echo "1. Mudar nome"
+echo "2. Mudar nome de usuário"
+echo "3. Mudar senha"
+echo "4. Redefinir o sistema operacional"
+echo "5. Fechar"
+read -p "Opção: " setting
+case $setting in
+   1) setname ;;
+   2) setuser ;;
+   3) setpass ;;
+   4) reset ;;
+   5) echo "Tchau, $(cat $wmsys/login/user.txt)!"; exit 0 ;;
+   *) echo "Opção $setting não existe." && exit 0 ;;
+esac
+}
+setname() {
+logo
+read -p "Novo nome: " newname
+read -s -p "Senha para confirmação: " password
+echo
+if [ "$password" == "$(cat $wmsys/login/passwd.txt)" ]; then
+rm -rf $wmsys/login/name.txt
+echo "$newname" >> $wmsys/login/name.txt
+echo "Pronto!"
+sleep 2
+main
+else
+echo "Senha incorreta! Tente novamente mais tarde."
+sleep 2
+main
+fi
+}
+setuser() {
+logo
+read -p "Novo nome de usuário: " newuser
+read -s -p "Senha para confirmação: " password
+echo
+if [ "$password" == "$(cat $wmsys/login/passwd.txt)" ]; then
+rm -rf $wmsys/login/user.txt
+echo "$newuser" >> $wmsys/login/user.txt
+echo "Pronto!"
+sleep 2
+main
+else
+echo "Senha incorreta! Tente novamente mais tarde."
+sleep 2
+main
+fi
+}
+setpass() {
+logo
+read -p "Nova senha: " newpass
+read -s -p "Senha antiga: " password
+echo
+if [ "$password" == "$(cat $wmsys/login/passwd.txt)" ]; then
+rm -rf $wmsys/login/passwd.txt
+echo "$newpass" >> $wmsys/login/passwd.txt
+echo "Pronto!"
+sleep 2
+main
+else
+echo "Senha incorreta! Tente novamente mais tarde."
+sleep 2
+main
+fi
+}
+reset() {
+logo
+echo "Atenção: use este recurso apenas se a pasta do sistema ainda existir. Detectando..."
+if [ -d "$wmsys" ]; then
+echo "Sistema detectado, continuando."
+reset2
+else
+echo "Sistema não detectado. Impossivel continuar."
+fi
+}
+reset2() {
+logo
+read -p "Tem certeza que você deseja redefinir o seu $(wmver)??? (S/n) " sure
+if [ "$sure" == "S" ]; then
+echo "Inicializando redefinição."
+rm -rf $wmsys/home
+rm -rf $wmsys/login/name.txt
+rm -rf $wmsys/login/user.txt
+rm -rf $wmsys/login/passwd.txt
+rm -rf $wmsys/*
+rm -rf $wmsys
+sleep 2
+echo "Redefinição completa! Reinstale pelo script"
+echo "'install' na pasta raiz de onde você instalou"
+echo "o WM PocketOS."
+sleep 2
+main
+else
+echo "Redefinição cancelada."
+sleep 2
+main
+fi
+}
+main

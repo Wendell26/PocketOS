@@ -1,0 +1,51 @@
+#!/bin/bash
+logo() {
+echo "/==========\ "
+echo "|    WM    | "
+echo "| PocketOS | "
+echo "| Software | "
+echo "| Checker  | "
+echo "| 4.0_B553 | "
+echo "\==========/ "
+date
+}
+key() {
+echo "Por favor, digite abaixo a chave de produto única que foi apresentada na instalação do software:"
+read -p "Chave de produto: " key
+sleep 1
+echo "Aguarde enquanto a verificação é feita..."
+sleep 2
+echo "[wmchk]: $ check key $key"
+sleep 1
+echo "[wmchk]: Please wait..."
+sleep 2
+if [ "$key" == "$(cat $wmsys/.WM_key.txt)" ]; then
+echo "[wmchk]: The key $key is valid to the PocketOS installed at $wmsys."
+sleep 2
+echo "O sistema PocketOS realmente foi instalado corretamente!"
+else
+echo "[wmchk]: The key $key is not valid to the PocketOS installed at $wmsys."
+sleep 2
+echo "Ops! Parece que o seu sistema PocketOS não é uma cópia real/não foi instalado corretamente."
+echo "Para corrigir o problema, precisamos deletar o seu sistema atual."
+echo "[wmchk]: $ root delete $wmsys -m Corrupted software."
+sleep 1
+echo "[wmchk]: Deleting $wmsys..."
+rm -rf $wmsys
+echo "export wmsys=" >> $PREFIX/etc/bash.bashrc
+echo "[wmchk]: Motivo pela exclusão: Software corrompido."
+sleep 2
+echo "Agora, reinstale o seu PocketOS pelo script 'install' na pasta raiz do instalador do software."
+exit 0
+fi
+}
+chk() {
+logo
+echo "Aguarde a verificação de software..."
+if [ "$system" == "$(uname -o)" ]; then
+echo "O sistema PocketOS realmente foi instalado corretamente!"
+else
+key
+fi
+}
+chk

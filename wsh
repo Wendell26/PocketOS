@@ -1,0 +1,59 @@
+#!/bin/bash
+root="$wmsys"
+home="$root/home"
+about="$(cat $root/about)"
+ver="$(cat $root/ver)"
+usr="$(cat $root/login/user.txt)"
+fnm="$(cat $root/login/name.txt)"
+pwd="$(cat $root/login/passwd.txt)"
+chk() {
+if [ "$system" == "$(uname -o)" ]; then
+echo -ne ""
+else
+echo "Software corrompido detectado! Carregando verificação de software..."
+wmchk
+echo "Verificação completa, reparando..."
+sleep 10
+echo "Aguarde..."
+sleep 1
+fi
+}
+login() {
+clear
+chk
+echo "WM PocketOS"
+read -p "Nome de usuário: " user
+if [ "$user" == "$usr" ]; then
+read -s -p "Olá, $fnm! Digite sua senha: " pass
+echo
+else
+echo "Uh, o usuário $user não existe."
+exit 0
+fi
+if [ "$pass" == "$pwd" ]; then
+echo "Bem-vindo(a), $usr!"
+shell
+else
+echo "$usr, a senha informada está incorreta."
+exit 0
+fi
+}
+shell() {
+chk
+export HOME=$home
+cd
+if [ -f ".autoexec.sh" ]; then
+bash .autoexec.sh
+bash
+else
+bash
+fi
+chk
+echo "Preparando para logout."
+sleep 2
+echo "Fechando serviços."
+sleep 5
+echo "Tchau, $usr!"
+exit 0
+}
+login
