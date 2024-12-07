@@ -53,7 +53,34 @@ inst1
 }
 inst1() {
 read -p "Digite o caminho para instalar o PocketOS: " instdir
-if [ -d "$instdir" ]; then
+if [ -f "$instdir/.installed" ]; then
+echo "Alerta: um sistema PocketOS existente foi detectado em $instdir."
+echo "1. Deletar sistema atual e criar um novo"
+echo "2. Utilizar o sistema instalado em $instdir"
+echo "3. Deletar sistema atual e abortar instalação"
+read -p "Escolha: " choice
+case $choice in
+   1) rm -rf $instdir
+      mkdir $instdir
+      create
+      ;;
+   2) echo "export wmsys="$instdir"" >> $PREFIX/etc/bash.bashrc
+      echo "export system="$(uname -o)"" >> $PREFIX/etc/bash.bashrc
+      end
+      ;;
+   3) rm -rf $instdir
+      exit 0
+      ;;
+   *) echo "Abortando."
+      exit 0
+      ;;
+esac
+else
+create
+fi
+}
+create() {
+touch $instdir/.installed
 mkdir $instdir/login
 echo "$fnm" >> $instdir/login/name.txt
 echo "$usr" >> $instdir/login/user.txt
@@ -81,35 +108,6 @@ cd
 echo "Instalação completa!"
 sleep 2
 end
-else
-echo "Criando o diretório $instdir."
-mkdir $instdir
-mkdir $instdir/login
-mkdir $instdir/home
-echo "$fnm" >> $instdir/login/name.txt
-echo "$usr" >> $instdir/login/user.txt
-echo "$pwd" >> $instdir/login/passwd.txt
-chmod +x *
-cp wsh $PREFIX/bin
-cp wmabout.sh $PREFIX/bin/wmabout
-cp wmver.sh $PREFIX/bin/wmver
-echo "Criando chave de produto WM PocketOS única..."
-echo "WM-$(shuf -i 1000-9999 -n 1)-$(shuf -i 1000-9999 -n 1)-PCKOS-$(shuf -i 1000-9999 -n 1)-$(shuf -i 1000-9999 -n 1)" >> $instdir/.WM_key.txt
-echo "Chave criada: $(cat $instdir/.WM_key.txt)"
-echo "Copie a chave. 15 segundos restantes!"
-sleep 15
-cp wmchk $PREFIX/bin/wmchk
-cp wmset $PREFIX/bin/wmset
-echo "export wmsys="$instdir"" >> $PREFIX/etc/bash.bashrc
-echo "WM PocketOS para $arch $ver" >> $instdir/about
-echo "WM PocketOS para $arch $ver" >> $instdir/ver
-echo "Executando no $brand $device." >> $instdir/about
-echo "Software instalado em $(date)." >> $instdir/about
-echo "Migrado do $system para o WM PocketOS para $arch $ver." >> $instdir/about
-cd
-sleep 2
-end
-fi
 }
 end() {
 echo "O WM PocketOS foi instalado!"
