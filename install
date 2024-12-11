@@ -53,6 +53,7 @@ inst1
 }
 inst1() {
 read -p "Digite o caminho para instalar o PocketOS: " instdir
+mkdir -p $instdir
 if [ -f "$instdir/.installed" ]; then
 echo "Alerta: um sistema PocketOS existente foi detectado em $instdir."
 echo "1. Deletar sistema atual e criar um novo"
